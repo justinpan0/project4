@@ -25,6 +25,9 @@ struct lairInfo{
     string key;
     int alarm;
     string name;
+    string decrypt;
+    int x;
+    int y;
 };
 
 // Decryption
@@ -73,8 +76,8 @@ int dist(int x1,int y1, int x2, int y2){
     return dist;
 }
 
-int pathFind(int n, int x0, int y0, vector < vector <int> > map){
-    int minDist = dist(x0, y0, map[0][2], map[0][3]);
+int pathFind(int n, int x0, int y0, vector <lairInfo> map){
+    int minDist = dist(x0, y0, map[0].x, map[0][3]);
     int minID = map[0][1];
     for(int i=1; i < n; i++){
         if(minDist > dist(x0, y0, map[i][2], map[i][3])){
@@ -95,13 +98,14 @@ int main(){
     ofstream out_bonty("bounty.txt");
     ofstream out_failure("failure.txt");
 
-    string key, name;
-    int ID, total_money, alarm;
+    string key, name,decrypt,init_map;
+    int ID, total_money, alarm, num, x_0, y_0, x_f, y_f;
 
     // Initialize a vector of struct lairInfo
     vector <lairInfo> info;
+    int i = 0;
+    in_map >> num >> x_0 >> y_0 >> x_f >> y_f;
     while(in_lair >> ID){
-        int i = 0;
         info[i].ID = ID;
         in_lair >> total_money;
         info[i].total_money = total_money;
@@ -111,5 +115,9 @@ int main(){
         info[i].alarm = alarm;
         in_lair >> name;
         info[i].name = name;
+        in_rob >> decrypt;
+        info[i].decrypt = decrypt;
+        i++;
     }
+
 }
