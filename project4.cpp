@@ -30,6 +30,12 @@ struct lairInfo{
     int y;
 };
 
+struct failure{
+    int ID;
+    string failure_reason;
+    string incorrect_key;
+    int decryption_time;
+};
 // Decryption
 string decrypt(string encrypted){
     // Remove all adjacent duplicate characters
@@ -95,7 +101,7 @@ int main(){
     ifstream in_lair("lair.txt");
     ifstream in_rob("robbery.txt");
     ifstream in_map("map.txt");
-    ofstream out_bonty("bounty.txt");
+    ofstream out_bounty("bounty.txt");
     ofstream out_failure("failure.txt");
 
     string key, name,decrypt,init_map;
@@ -103,7 +109,10 @@ int main(){
 
     // Initialize a vector of struct lairInfo
     vector <lairInfo> info;
+    vector <failure> failure;
     int i = 0;
+    int p = 0;
+    
     in_map >> num >> x_0 >> y_0 >> x_f >> y_f;
     while(in_lair >> ID){
         info[i].ID = ID;
@@ -117,7 +126,31 @@ int main(){
         info[i].name = name;
         in_rob >> decrypt;
         info[i].decrypt = decrypt;
+        in_map >> ID >> x >> y;
+        info[i].x = x;
+        info[i].y = y;
         i++;
     }
-
+    
+    for(int j=0; j < num; j++){ 
+        string decrypt_key = decrypt(info[j].key);
+        if(decrypt_key != info[j].decrypt){
+            failure[p].ID = info[j].ID;
+            failure[p].failure_reason = " incorrect decrypted key: ";
+            failure[p].incorrect_key = decrypt_key;
+            info[j].ID = 0;
+            j++;
+        } else if(info[j].key.size() >= info[j].alarm){
+            failure[p].ID = info[j].ID;
+            failure[p].failure_reason = " decryption tiem too long: ";
+            failure[p].decryption_time = info[j].key.size;
+            info[j].ID = 0;
+            j++;
+        } else {
+            continue;
+        }
+    }
+    
+    out_failure << info[i].ID << " incorrect decrypted key: " << decrypt_key << endl;
+    out_failure << info.[i].ID << " decryption time too long: " << info[i].key.size();
 }
