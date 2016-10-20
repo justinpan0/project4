@@ -13,7 +13,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <vector>
 #include <cmath>
 
@@ -84,10 +83,20 @@ int dist(int x1,int y1, int x2, int y2){
 }
 
 int pathFind(int n, int x0, int y0, vector <lairInfo> map){
-    int minDist = dist(x0, y0, map[0].x, map[0].y);
-    int minID = map[0].ID;
-    for(int i=1; i < n; i++){
-        if(minDist > dist(x0, y0, map[i].x, map[i].y)){
+    int count = 0;
+    for(int i = 0; i < n; i++){
+        if(map[i].ID != 0){
+            break;
+        } else {
+            count++;
+        }
+    }
+    int minDist = dist(x0, y0, map[count].x, map[count].y);
+    int minID = map[count].ID;
+    for(int i = count + 1; i < n; i++){
+        if(map[i].ID == 0){
+            continue;
+        } else if(minDist > dist(x0, y0, map[i].x, map[i].y)){
             minDist = dist(x0, y0, map[i].x, map[i].y);
             minID = map[i].ID;
         } else if(minDist == dist(x0, y0, map[i].x, map[i].y) || minID > map[i].ID){
@@ -110,12 +119,18 @@ int main(){
     int x,y;
     // Initialize a vector of struct lairInfo
     vector <lairInfo> info;
-    vector <failure> failure;
+    vector <failure> fail;
+
+    fail.push_back(failure());
+
     int i = 0;
     int p = 0;
 
     in_map >> num >> x_0 >> y_0 >> x_f >> y_f;
+    cout << num << x_0 << endl;
+
     while(in_lair >> ID){
+        info.push_back(lairInfo());
         info[i].ID = ID;
         in_lair >> total_money;
         info[i].total_money = total_money;
@@ -125,30 +140,59 @@ int main(){
         info[i].alarm = alarm;
         in_lair >> name;
         info[i].name = name;
-        in_rob >> decrypt_key;
-        info[i].decrypt_key = decrypt_key;
-        in_map >> ID >> x >> y;
-        info[i].x = x;
-        info[i].y = y;
+        // cout << ID << name << endl;
         i++;
     }
 
+    i = 0;
+    while(in_rob >> decrypt_key){
+        info[i].decrypt_key = decrypt_key;
+        //cout << decrypt_key << endl;
+        i++;
+    }
+
+    i = 0;
+    while(in_map >> ID){
+        in_map >> x >> y;
+        info[i].x = x;
+        info[i].y = y;
+        //cout << x << y << endl;
+        i++;
+    }
+
+    // Find the lairs that cannot be robbed
     for(int j=0; j < num; j++){
         decrypt_key = decrypt(info[j].key);
         if(decrypt_key != info[j].decrypt_key){
-            failure[p].ID = info[j].ID;
-            failure[p].failure_reason = " incorrect decrypted key: ";
-            failure[p].incorrect_key = decrypt_key;
+            fail.push_back(failure());
+            fail[p].ID = info[j].ID;
+            fail[p].failure_reason = " incorrect decrypted key: ";
+            fail[p].incorrect_key = decrypt_key;
             info[j].ID = 0;
+            p++;
             j++;
         } else if(info[j].key.size() >= info[j].alarm){
-            failure[p].ID = info[j].ID;
-            failure[p].failure_reason = " decryption tiem too long: ";
-            failure[p].decryption_time = info[j].key.size();
+            fail.push_back(failure());
+            fail[p].ID = info[j].ID;
+            fail[p].failure_reason = " decryption tiem too long: ";
+            fail[p].decryption_time = info[j].key.size();
             info[j].ID = 0;
+            p++;
             j++;
         } else {
             continue;
+        }
+    }
+
+    // Find the path for all avaiable lairs
+    x = x_0;
+    y = y_0;
+
+    for(int i = 0; i < num; i++){
+        if(info[i].ID != 0){
+            int minID = pathFind(num, x, y, info);
+
+            out_bounty << "Moved from (" <<
         }
     }
 
