@@ -111,12 +111,14 @@ int main(){
     ifstream in_lair("lair.txt");
     ifstream in_rob("robbery.txt");
     ifstream in_map("map.txt");
-    //ofstream out_bounty("bounty.txt");
+    ofstream out_bounty("bounty.txt");
     //ofstream out_failure("failure.txt");
 
     string key, name,decrypt_key,init_map;
     int ID, total_money, alarm, num, x_0, y_0, x_f, y_f;
     int x,y;
+    double distance = 0.0;
+    int bounty = 0;
     // Initialize a vector of struct lairInfo
     vector <LairInfo> info;
     vector <Failure> fail;
@@ -160,7 +162,7 @@ int main(){
         in_map >> x >> y;
         info[n].x = x;
         info[n].y = y;
-        cout << x << y << endl;
+        //cout << x << y << endl;
         i++;
     }
     //cout << i << endl;
@@ -198,21 +200,27 @@ int main(){
             while(minID != info[n].ID){
                 n++;
             }
-            cout << info[n].ID << " " << info[n].x << endl;
+            //cout << info[n].ID << " " << info[n].x << endl;
             string lair_name = info[n].name;
 
             while(lair_name.find("_") != lair_name.npos){
                 lair_name.replace(lair_name.find("_"), 1, " ");
             }
 
-            cout << "Moved from (" << x << "," << y << ") to (" << info[n].x << "," << info[n].y << ")" << endl;
-            cout << "Robbed lair " << lair_name << " and stole $" << info[n].total_money << endl;
+            out_bounty << "Moved from (" << x << "," << y << ") to (" << info[n].x << "," << info[n].y << ")" << endl;
+            out_bounty << "Robbed lair " << lair_name << " and stole $" << info[n].total_money << endl;
+            distance += sqrt(pow(x-info[n].x,2)+pow(y-info[n].y,2));
             x = info[n].x;
             y = info[n].y;
+            bounty += info[n].total_money;
             n++;
             info[j].ID = 0;
         }
     }
+    out_bounty << "Moved from (" << x << "," << y << ") to (" << x_f << "," << y_f << ")" << endl;
+    out_bounty << "Made it to safety!" << endl;
+    out_bounty << "Total distance traveled: " << distance + sqrt(pow(x_f-x,2)+pow(y_f-y,2)) << " miles" << endl;
+    out_bounty << "Total bounty given to charity: $" << bounty << endl;
 
     //out_failure << info[i].ID << " incorrect decrypted key: " << endl;
     //out_failure << info.[i].ID << " decryption time too long: " << info[i].key.size();
