@@ -1,0 +1,2 @@
+34	incorrect decrypted key: nevergonagiveyoup
+56	decryption time too long: 30

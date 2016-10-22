@@ -1,0 +1,22 @@
+Moved from (0,19) to (3,17)
+Robbed lair Wolverine Hacking Society and stole $1000000
+Moved from (3,17) to (3,17)
+Robbed lair Wolverine Hacking Society and stole $1000000
+Moved from (3,17) to (7,14)
+Robbed lair Secure Software Services and stole $39878
+Moved from (7,14) to (7,14)
+Robbed lair Secure Software Services and stole $39878
+Moved from (7,14) to (7,14)
+Robbed lair Secure Software Services and stole $39878
+Moved from (7,14) to (7,14)
+Robbed lair Secure Software Services and stole $39878
+Moved from (7,14) to (7,14)
+Robbed lair Secure Software Services and stole $39878
+Moved from (7,14) to (7,14)
+Robbed lair Secure Software Services and stole $39878
+Moved from (7,14) to (7,14)
+Robbed lair Secure Software Services and stole $39878
+Moved from (7,14) to (19,0)
+Made it to safety!
+Total distance traveled: 27.0446 miles
+Total bounty given to charity: $2279146

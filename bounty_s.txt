@@ -1,0 +1,30 @@
+Moved from (0,19) to (0,16)
+Robbed lair Red Wings Inc and stole $2327
+Moved from (0,16) to (3,17)
+Robbed lair Wolverine Hacking Society and stole $1000000
+Moved from (3,17) to (7,14)
+Robbed lair Secure Software Services and stole $39878
+Moved from (7,14) to (10,10)
+Robbed lair Miller Gold Software and stole $1239438
+Moved from (10,10) to (8,9)
+Robbed lair Tiger Hacking Group and stole $12312
+Moved from (8,9) to (6,6)
+Robbed lair Astley & Co Gaming and stole $889834
+Moved from (6,6) to (5,5)
+Robbed lair Legit Games Inc and stole $9999999
+Moved from (5,5) to (5,7)
+Robbed lair We Are Poor and stole $76
+Moved from (5,7) to (3,2)
+Robbed lair Cereal and Milk Games and stole $887
+Moved from (3,2) to (0,0)
+Robbed lair Sam Jackson Inc and stole $67593
+Moved from (0,0) to (11,0)
+Robbed lair Apoorva's Gaming Co and stole $983923
+Moved from (11,0) to (14,8)
+Robbed lair Coding Frenzy Co and stole $5000
+Moved from (14,8) to (19,19)
+Robbed lair 182 Hackers and stole $78945
+Moved from (19,19) to (19,0)
+Made it to safety!
+Total distance traveled: 85.0359 miles
+Total bounty given to charity: $14320212

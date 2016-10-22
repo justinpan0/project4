@@ -91,26 +91,18 @@ int dist(int x1,int y1, int x2, int y2){
     return dist;
 }
 
-int pathFind(int n, int x0, int y0, vector <LairInfo> map){
-    int count = 0;
-    for(int i = 0; i < n; i++){
+int pathFind(int x0, int y0, vector <LairInfo> map){
+    int minDist = dist(x0, y0, map[0].x, map[0].y);
+    int minID = map[0].ID;
+    for(int i = 0; i < map.size(); i++){
         if(map[i].ID != 0){
-            break;
-        } else {
-            count++;
-        }
-    }
-    int minDist = dist(x0, y0, map[count].x, map[count].y);
-    int minID = map[count].ID;
-    for(int i = count + 1; i < n; i++){
-        if(map[i].ID == 0){
-            continue;
-        } else if(minDist > dist(x0, y0, map[i].x, map[i].y)){
+            if(minDist > dist(x0, y0, map[i].x, map[i].y)){
             minDist = dist(x0, y0, map[i].x, map[i].y);
             minID = map[i].ID;
-        } else if(minDist == dist(x0, y0, map[i].x, map[i].y) || minID > map[i].ID){
+            } else if(minDist == dist(x0, y0, map[i].x, map[i].y) || minID > map[i].ID){
             minID = map[i].ID;
-        }
+            }
+	}
     }
     return minID;
 }
@@ -203,7 +195,7 @@ int main(){
     //cout << x << y << endl;
     for(int j = 0; j < i; j++){
         if(info[j].ID != 0){
-            int minID = pathFind(num, x, y, info);
+            int minID = pathFind(x, y, info);
             int n=0;
             while(minID != info[n].ID){
                 // Find the ID's corresponding info
@@ -224,6 +216,7 @@ int main(){
             bounty += info[n].total_money;
             n++;
             info[j].ID = 0;
+	    info[n].ID = 0;
         }
     }
     out_bounty << "Moved from (" << x << "," << y << ") to (" << x_f << "," << y_f << ")" << endl;
@@ -242,9 +235,9 @@ int main(){
                 }
             }
             if(fail[n].failure_reason == " incorrect decrypted key: "){
-                out_failure << fail[n].ID << " incorrect decrypted key: " << fail[n].incorrect_key << endl;
+                out_failure << fail[n].ID << "	incorrect decrypted key: " << fail[n].incorrect_key << endl;
             } else {
-                out_failure << fail[n].ID << " decryption time too long: " << fail[n].decryption_time << endl;
+                out_failure << fail[n].ID << "	decryption time too long: " << fail[n].decryption_time << endl;
             }
         }
     }
