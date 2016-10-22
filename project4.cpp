@@ -34,7 +34,16 @@ struct Failure{
     string failure_reason;
     string incorrect_key;
     int decryption_time;
-};
+};\
+bool cmp(const Failure& lhs, const Failure& rhs)
+{
+    return lhs.ID < rhs.ID;
+}
+
+bool removeID(Failure const &fail, int ID)
+{
+    return fail.ID == ID;
+}
 
 // Decryption
 string decrypt(string encrypted){
@@ -112,7 +121,7 @@ int main(){
     ifstream in_rob("robbery.txt");
     ifstream in_map("map.txt");
     ofstream out_bounty("bounty.txt");
-    //ofstream out_failure("failure.txt");
+    ofstream out_failure("failure.txt");
 
     string key, name,decrypt_key,init_map;
     int ID, total_money, alarm, num, x_0, y_0, x_f, y_f;
@@ -192,12 +201,12 @@ int main(){
     x = x_0;
     y = y_0;
     //cout << x << y << endl;
-
     for(int j = 0; j < i; j++){
         if(info[j].ID != 0){
             int minID = pathFind(num, x, y, info);
             int n=0;
             while(minID != info[n].ID){
+                // Find the ID's corresponding info
                 n++;
             }
             //cout << info[n].ID << " " << info[n].x << endl;
@@ -222,6 +231,22 @@ int main(){
     out_bounty << "Total distance traveled: " << distance + sqrt(pow(x_f-x,2)+pow(y_f-y,2)) << " miles" << endl;
     out_bounty << "Total bounty given to charity: $" << bounty << endl;
 
-    //out_failure << info[i].ID << " incorrect decrypted key: " << endl;
-    //out_failure << info.[i].ID << " decryption time too long: " << info[i].key.size();
+    for(int j = 0; j < p; j++) {
+        int n = j;
+        if(fail[j].ID != 0){
+            int minID = fail[j].ID;
+            for(int k = 0; k < p; k++){
+                if(fail[j].ID != 0 && fail[j].ID < minID){
+                    minID = fail[k].ID;
+                    n = k;
+                }
+            }
+            if(fail[n].failure_reason == " incorrect decrypted key: "){
+                out_failure << fail[n].ID << " incorrect decrypted key: " << fail[n].incorrect_key << endl;
+            } else {
+                out_failure << fail[n].ID << " decryption time too long: " << fail[n].decryption_time << endl;
+            }
+        }
+    }
+
 }
