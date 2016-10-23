@@ -86,24 +86,38 @@ string decrypt(string encrypted){
 }
 
 // Path Finding
-int dist(int x1,int y1, int x2, int y2){
-    int dist = sqrt(pow(x2-x1,2)+pow(y2-y1,2));
+double dist(int x1,int y1, int x2, int y2){
+    double dist = sqrt(pow(x2-x1,2)+pow(y2-y1,2));
     return dist;
 }
 
-int pathFind(int x0, int y0, vector <LairInfo> map){
-    int minDist = dist(x0, y0, map[0].x, map[0].y);
-    int minID = map[0].ID;
-    for(int i = 0; i < map.size(); i++){
-        if(map[i].ID != 0){
-            if(minDist > dist(x0, y0, map[i].x, map[i].y)){
-            minDist = dist(x0, y0, map[i].x, map[i].y);
-            minID = map[i].ID;
-            } else if(minDist == dist(x0, y0, map[i].x, map[i].y) || minID > map[i].ID){
-            minID = map[i].ID;
-            }
-	}
+int pathFind(int x0, int y0, vector <LairInfo> &map){
+    //cout << map[0].ID << endl;
+    //cout << map[14].x << endl;
+    int j=0;
+    while(map[j].ID == 0) {
+        j++;
     }
+    double minDist = dist(x0, y0, map[j].x, map[j].y);
+    int minID = map[j].ID;
+    //cout << "minDist" << minDist << endl;
+    //cout << "size: " << map.size() << endl;
+    for(int i = 0; i < map.size(); i++){
+        //cout << map[i].ID << endl;
+        if(map[i].ID != 0){
+            //cout << i << " " << map[i].ID << " ";
+            //cout << dist(x0, y0, map[i].x, map[i].y) << endl;
+            if(minDist > dist(x0, y0, map[i].x, map[i].y)){
+                minDist = dist(x0, y0, map[i].x, map[i].y);
+                minID = map[i].ID;
+                //cout << "minDist:" << minDist << endl;
+            } else if(minDist == dist(x0, y0, map[i].x, map[i].y) && minID > map[i].ID){
+                minID = map[i].ID;
+                //cout << "minID " << minID << endl;
+            }
+        }
+    }
+    //cout << minID << endl;
     return minID;
 }
 
@@ -167,6 +181,7 @@ int main(){
         i++;
     }
     //cout << i << endl;
+
     // Find the lairs that cannot be robbed
     for(int j=0; j < i; j++){
         decrypt_key = decrypt(info[j].decrypt_key);
@@ -179,7 +194,7 @@ int main(){
             fail[p].incorrect_key = decrypt_key;
             info[j].ID = 0;
             p++;
-        } else if(info[j].decrypt_key.size() >= info[j].alarm){
+        } else if(info[j].decrypt_key.size() > info[j].alarm){
             fail.push_back(Failure());
             fail[p].ID = info[j].ID;
             fail[p].failure_reason = " decryption tiem too long: ";
@@ -193,31 +208,32 @@ int main(){
     x = x_0;
     y = y_0;
     //cout << x << y << endl;
-    for(int j = 0; j < i; j++){
-        if(info[j].ID != 0){
-            int minID = pathFind(x, y, info);
-            int n=0;
-            while(minID != info[n].ID){
-                // Find the ID's corresponding info
-                n++;
-            }
-            //cout << info[n].ID << " " << info[n].x << endl;
-            string lair_name = info[n].name;
-
-            while(lair_name.find("_") != lair_name.npos){
-                lair_name.replace(lair_name.find("_"), 1, " ");
-            }
-
-            out_bounty << "Moved from (" << x << "," << y << ") to (" << info[n].x << "," << info[n].y << ")" << endl;
-            out_bounty << "Robbed lair " << lair_name << " and stole $" << info[n].total_money << endl;
-            distance += sqrt(pow(x-info[n].x,2)+pow(y-info[n].y,2));
-            x = info[n].x;
-            y = info[n].y;
-            bounty += info[n].total_money;
+    //cout << info[0].ID << endl;
+    //cout << "info size: " << info.size() << endl;
+    int n;
+    for(int j = 0; j < info.size()-fail.size()+1; j++) {
+        n = 0;
+        int minID = pathFind(x, y, info);
+        while (minID != info[n].ID) {
+            // Find the ID's corresponding info
             n++;
-            info[j].ID = 0;
-	    info[n].ID = 0;
         }
+        //cout << info[n].ID << " " << endl;
+        string lair_name = info[n].name;
+
+        while (lair_name.find("_") != lair_name.npos) {
+            lair_name.replace(lair_name.find("_"), 1, " ");
+        }
+
+        out_bounty << "Moved from (" << x << "," << y << ") to (" << info[n].x << "," << info[n].y << ")" << endl;
+        out_bounty << "Robbed lair " << lair_name << " and stole $" << info[n].total_money << endl;
+        distance += sqrt(pow(x - info[n].x, 2) + pow(y - info[n].y, 2));
+        x = info[n].x;
+        y = info[n].y;
+        bounty += info[n].total_money;
+        //cout << "n: " << n << " " << info[n].ID << endl;
+        info[n].ID = 0;
+        //cout << x << y << endl;
     }
     out_bounty << "Moved from (" << x << "," << y << ") to (" << x_f << "," << y_f << ")" << endl;
     out_bounty << "Made it to safety!" << endl;
@@ -241,5 +257,4 @@ int main(){
             }
         }
     }
-
 }
