@@ -19,6 +19,7 @@
 using namespace std;
 
 struct LairInfo{
+    // Define structure lairinfo as all the information read from lair, map and robbery txt 
     int ID;
     int total_money;
     string key;
@@ -30,20 +31,12 @@ struct LairInfo{
 };
 
 struct Failure{
+    // Define structure failure as the failure reasons of specific failed cases from LairInfo
     int ID;
     string failure_reason;
     string incorrect_key;
     int decryption_time;
 };\
-bool cmp(const Failure& lhs, const Failure& rhs)
-{
-    return lhs.ID < rhs.ID;
-}
-
-bool removeID(Failure const &fail, int ID)
-{
-    return fail.ID == ID;
-}
 
 // Decryption
 string decrypt(string encrypted){
@@ -62,14 +55,12 @@ string decrypt(string encrypted){
         }
     }
 
-    //cout << encrypted << endl;
     // Remove all instances of the first three characters
     string temp = encrypted.substr(0,3);
     while(encrypted.find(temp) != encrypted.npos){
         encrypted.erase(encrypted.find(temp),3);
     }
 
-    //cout << encrypted << endl;
     // If the fist and last two characters match, shift all characters up by 3 in the ACSII map; otherwise, shift by 5
     if(encrypted.substr(0,2) == encrypted.substr(encrypted.size()-2,2)){
         for(int i = 0; i < encrypted.size(); i++){
@@ -87,31 +78,31 @@ string decrypt(string encrypted){
 
 // Path Finding
 double dist(int x1,int y1, int x2, int y2){
-    double dist = sqrt(pow(x2-x1,2)+pow(y2-y1,2));
+    double dist = sqrt(pow(x2-x1,2)+pow(y2-y1,2)); // Distance between two coordinates
     return dist;
 }
 
 int pathFind(int x0, int y0, vector <LairInfo> &map){
-    //cout << map[0].ID << endl;
-    //cout << map[14].x << endl;
+    // Find the cloest point of (x0,y0) from map
     int j=0;
     while(map[j].ID == 0) {
+	// Find the first ID that is not used before
         j++;
     }
     double minDist = dist(x0, y0, map[j].x, map[j].y);
     int minID = map[j].ID;
-    //cout << "minDist" << minDist << endl;
-    //cout << "size: " << map.size() << endl;
+
     for(int i = 0; i < map.size(); i++){
         //cout << map[i].ID << endl;
         if(map[i].ID != 0){
             //cout << i << " " << map[i].ID << " ";
-            //cout << dist(x0, y0, map[i].x, map[i].y) << endl;
             if(minDist > dist(x0, y0, map[i].x, map[i].y)){
+		// If finded a dist smaller than previous min dist
                 minDist = dist(x0, y0, map[i].x, map[i].y);
                 minID = map[i].ID;
                 //cout << "minDist:" << minDist << endl;
             } else if(minDist == dist(x0, y0, map[i].x, map[i].y) && minID > map[i].ID){
+		// If finded a dist equal to previous min dist with a smaller ID #
                 minID = map[i].ID;
                 //cout << "minID " << minID << endl;
             }
@@ -123,6 +114,7 @@ int pathFind(int x0, int y0, vector <LairInfo> &map){
 
 
 int main(){
+    // Read all the files
     ifstream in_lair("lair.txt");
     ifstream in_rob("robbery.txt");
     ifstream in_map("map.txt");
@@ -134,19 +126,17 @@ int main(){
     int x,y;
     double distance = 0.0;
     int bounty = 0;
+
     // Initialize a vector of struct lairInfo
     vector <LairInfo> info;
     vector <Failure> fail;
-
     fail.push_back(Failure());
-
     int i = 0;
     int p = 0;
-
     in_map >> num >> x_0 >> y_0 >> x_f >> y_f;
-    //cout << num << x_0 << endl;
 
     while(in_lair >> ID){
+	// Read from lair txt
         info.push_back(LairInfo());
         info[i].ID = ID;
         in_lair >> total_money;
@@ -157,14 +147,13 @@ int main(){
         info[i].alarm = alarm;
         in_lair >> name;
         info[i].name = name;
-        //cout << ID << name << endl;
         i++;
     }
 
     i = 0;
     while(in_rob >> decrypt_key){
+	// Read from robbery txt
         info[i].decrypt_key = decrypt_key;
-        //cout << decrypt_key << endl;
         i++;
     }
 
@@ -177,12 +166,9 @@ int main(){
         in_map >> x >> y;
         info[n].x = x;
         info[n].y = y;
-        //cout << x << y << endl;
         i++;
     }
-    //cout << i << endl;
 
-    // Find the lairs that cannot be robbed
     for(int j=0; j < i; j++){
         decrypt_key = decrypt(info[j].decrypt_key);
         //cout << info[j].decrypt_key << "1" << endl;
@@ -204,12 +190,9 @@ int main(){
         }
     }
     // Find the path for all avaiable lairs
-    //cout << 1;
     x = x_0;
     y = y_0;
-    //cout << x << y << endl;
-    //cout << info[0].ID << endl;
-    //cout << "info size: " << info.size() << endl;
+
     int n;
     for(int j = 0; j < info.size()-fail.size()+1; j++) {
         n = 0;
@@ -218,22 +201,24 @@ int main(){
             // Find the ID's corresponding info
             n++;
         }
-        //cout << info[n].ID << " " << endl;
+
         string lair_name = info[n].name;
 
         while (lair_name.find("_") != lair_name.npos) {
+	    // Replace all the _ sign with blank space
             lair_name.replace(lair_name.find("_"), 1, " ");
         }
 
         out_bounty << "Moved from (" << x << "," << y << ") to (" << info[n].x << "," << info[n].y << ")" << endl;
         out_bounty << "Robbed lair " << lair_name << " and stole $" << info[n].total_money << endl;
-        distance += sqrt(pow(x - info[n].x, 2) + pow(y - info[n].y, 2));
-        x = info[n].x;
+
+        distance += sqrt(pow(x - info[n].x, 2) + pow(y - info[n].y, 2)); // Add up the total distance
+	bounty += info[n].total_money; // Add up the total bounty
+
+        x = info[n].x; // Assign the new point to the x,y
         y = info[n].y;
-        bounty += info[n].total_money;
-        //cout << "n: " << n << " " << info[n].ID << endl;
-        info[n].ID = 0;
-        //cout << x << y << endl;
+
+        info[n].ID = 0; // Change the used ID to 0
     }
     out_bounty << "Moved from (" << x << "," << y << ") to (" << x_f << "," << y_f << ")" << endl;
     out_bounty << "Made it to safety!" << endl;
@@ -241,11 +226,13 @@ int main(){
     out_bounty << "Total bounty given to charity: $" << bounty << endl;
 
     for(int j = 0; j < p; j++) {
+	// Output the failure txt
         int n = j;
         if(fail[j].ID != 0){
             int minID = fail[j].ID;
             for(int k = 0; k < p; k++){
                 if(fail[j].ID != 0 && fail[j].ID < minID){
+		    // Find the smallest ID #
                     minID = fail[k].ID;
                     n = k;
                 }
