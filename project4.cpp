@@ -9,7 +9,8 @@
 // Date Submitted: 
 //
 // Program Description:
-// Decryption of pixel info by functions specified in orders
+// According to the input data, decide on the nodes that can be reached, and plan the best 
+// path through these nodes based on Greedy Algorithm
 
 #include <iostream>
 #include <fstream>
@@ -36,7 +37,7 @@ struct Failure{
     string failure_reason;
     string incorrect_key;
     int decryption_time;
-};\
+};
 
 // Decryption
 string decrypt(string encrypted){
@@ -61,7 +62,8 @@ string decrypt(string encrypted){
         encrypted.erase(encrypted.find(temp),3);
     }
 
-    // If the fist and last two characters match, shift all characters up by 3 in the ACSII map; otherwise, shift by 5
+    // If the fist and last two characters match, shift all characters up by 3 in 
+    // the ACSII map; otherwise, shift by 5
     if(encrypted.substr(0,2) == encrypted.substr(encrypted.size()-2,2)){
         for(int i = 0; i < encrypted.size(); i++){
             encrypted[i] = encrypted[i] + 3;
@@ -78,7 +80,8 @@ string decrypt(string encrypted){
 
 // Path Finding
 double dist(int x1,int y1, int x2, int y2){
-    double dist = sqrt(pow(x2-x1,2)+pow(y2-y1,2)); // Distance between two coordinates
+    // Distance between two coordinates
+    double dist = sqrt(pow(x2-x1,2)+pow(y2-y1,2)); 
     return dist;
 }
 
@@ -93,22 +96,22 @@ int pathFind(int x0, int y0, vector <LairInfo> &map){
     int minID = map[j].ID;
 
     for(int i = 0; i < map.size(); i++){
-        //cout << map[i].ID << endl;
+        //cout << map[i].ID << endl; //For Testing
         if(map[i].ID != 0){
-            //cout << i << " " << map[i].ID << " ";
+            //cout << i << " " << map[i].ID << " "; //For Testing
             if(minDist > dist(x0, y0, map[i].x, map[i].y)){
 		// If finded a dist smaller than previous min dist
                 minDist = dist(x0, y0, map[i].x, map[i].y);
                 minID = map[i].ID;
-                //cout << "minDist:" << minDist << endl;
+                //cout << "minDist:" << minDist << endl; //For Testing
             } else if(minDist == dist(x0, y0, map[i].x, map[i].y) && minID > map[i].ID){
 		// If finded a dist equal to previous min dist with a smaller ID #
                 minID = map[i].ID;
-                //cout << "minID " << minID << endl;
+                //cout << "minID " << minID << endl; //For Testing
             }
         }
     }
-    //cout << minID << endl;
+    //cout << minID << endl; //For Testing
     return minID;
 }
 
@@ -133,6 +136,7 @@ int main(){
     fail.push_back(Failure());
     int i = 0;
     int p = 0;
+	
     in_map >> num >> x_0 >> y_0 >> x_f >> y_f;
 
     while(in_lair >> ID){
@@ -170,17 +174,18 @@ int main(){
     }
 
     for(int j=0; j < i; j++){
+	// Find all failed cases    
         decrypt_key = decrypt(info[j].decrypt_key);
-        //cout << info[j].decrypt_key << "1" << endl;
-        //cout << decrypt(info[j].decrypt_key) << "2" << endl;
         if(decrypt_key != info[j].key){
+	    // Failed b/c wrong key 	
             fail.push_back(Failure());
             fail[p].ID = info[j].ID;
-            fail[p].failure_reason = " incorrect decrypted key: ";
+            fail[p].failure_reason = " incorrect decrypted key: "; // Failed reason
             fail[p].incorrect_key = decrypt_key;
-            info[j].ID = 0;
+            info[j].ID = 0; // Set the ID in LairInfo to 0 indicating it is a failed case
             p++;
         } else if(info[j].decrypt_key.size() > info[j].alarm){
+	    // Failed b/c right key but exceeding time limit	
             fail.push_back(Failure());
             fail[p].ID = info[j].ID;
             fail[p].failure_reason = " decryption tiem too long: ";
@@ -189,23 +194,22 @@ int main(){
             p++;
         }
     }
-    // Find the path for all avaiable lairs
+	
+    // Find the path for all remaining lairs
     x = x_0;
     y = y_0;
-
     int n;
     for(int j = 0; j < info.size()-fail.size()+1; j++) {
         n = 0;
-        int minID = pathFind(x, y, info);
+        int minID = pathFind(x, y, info); // Find the closest coordinates
         while (minID != info[n].ID) {
             // Find the ID's corresponding info
             n++;
         }
 
         string lair_name = info[n].name;
-
         while (lair_name.find("_") != lair_name.npos) {
-	    // Replace all the _ sign with blank space
+	    // Replace all the "_" with blank space
             lair_name.replace(lair_name.find("_"), 1, " ");
         }
 
@@ -218,21 +222,21 @@ int main(){
         x = info[n].x; // Assign the new point to the x,y
         y = info[n].y;
 
-        info[n].ID = 0; // Change the used ID to 0
+        info[n].ID = 0; // Set the ID in LairInfo to 0 indicating it is a used case
     }
     out_bounty << "Moved from (" << x << "," << y << ") to (" << x_f << "," << y_f << ")" << endl;
     out_bounty << "Made it to safety!" << endl;
     out_bounty << "Total distance traveled: " << distance + sqrt(pow(x_f-x,2)+pow(y_f-y,2)) << " miles" << endl;
     out_bounty << "Total bounty given to charity: $" << bounty << endl;
-
+    
+    // Output the failure txt by ascending ID #
     for(int j = 0; j < p; j++) {
-	// Output the failure txt
         int n = j;
         if(fail[j].ID != 0){
             int minID = fail[j].ID;
             for(int k = 0; k < p; k++){
                 if(fail[j].ID != 0 && fail[j].ID < minID){
-		    // Find the smallest ID #
+		    // Find the smallest ID # thats not 0
                     minID = fail[k].ID;
                     n = k;
                 }
