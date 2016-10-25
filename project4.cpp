@@ -135,7 +135,7 @@ int main(){
     vector <Failure> fail;
     fail.push_back(Failure());
     int i = 0;
-    int p = 0;
+    int p = 0; // The total number of failed cases
 	
     in_map >> num >> x_0 >> y_0 >> x_f >> y_f;
 
@@ -194,6 +194,7 @@ int main(){
             p++;
         }
     }
+    // p is the total # of failed cases
 	
     // Find the path for all remaining lairs
     x = x_0;
